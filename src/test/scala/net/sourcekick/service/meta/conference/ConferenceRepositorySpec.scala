@@ -22,7 +22,7 @@ private object ConferenceRepositorySpec {
   // because apparently for each test case in the Spec the Spec class is instantiated individually
   // therefore we simply keep these references here in the companion object
 
-  private def conferenceRepository = new ConferenceDatabaseModule(DatabaseConfig.forConfig("database"))
+  private def conferenceRepository = new ConferenceDatabaseModule(DatabaseConfig.forConfig("meta-conference.database"))
 
 }
 
@@ -33,7 +33,6 @@ class ConferenceRepositorySpec extends AsyncWordSpec with Matchers with BeforeAn
     val _ = Await.result(conferenceRepository.createSchema(), 10.seconds)
   }
 
-  // TODO add many more test cases
   "The DeviceRepository" must {
 
     "return nothing if there is nothing for a given primary key" in {
@@ -59,8 +58,9 @@ class ConferenceRepositorySpec extends AsyncWordSpec with Matchers with BeforeAn
           found shouldBe 'isDefined
           found.get shouldBe conference
         })
-
     }
+
+    // TODO priority 2 add a test case with: create, load, update, load
 
   }
 

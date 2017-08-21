@@ -61,7 +61,7 @@ lazy val library =
       val akka = "2.5.4"
       val akkaHttp = "10.0.9"
       val akkaHttpCirce = "1.17.0"
-      val swaggerAkkaHttp = "0.9.1"
+      val swaggerAkkaHttp = "0.10.1"
       // JSON
       val circe = "0.8.0"
       val flyway = "4.2.0"
