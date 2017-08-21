@@ -37,6 +37,8 @@ lazy val metaConference =
         library.scalaTime,
         library.slick,
         library.slickHikaricp,
+        library.slickPg,
+        library.slickPgCirceJson,
         library.akkaTestkit % Test,
         library.akkaHttpTestkit % Test,
         library.akkaStreamTestkit % Test,
@@ -56,20 +58,21 @@ lazy val library =
     object Version {
       val h2db = "1.4.193"
       // Akka
-      val akka = "2.5.1"
-      val akkaHttp = "10.0.6"
-      val akkaHttpCirce = "1.16.0"
+      val akka = "2.5.4"
+      val akkaHttp = "10.0.9"
+      val akkaHttpCirce = "1.17.0"
       val swaggerAkkaHttp = "0.9.1"
       // JSON
       val circe = "0.8.0"
       val flyway = "4.2.0"
       // JWT
-      val jwtCirce = "0.12.1"
+      val jwtCirce = "0.14.0"
       // time
       val scalaTime = "0.4.1"
       // database access
       val postgresJdbcDriver = "9.4.1212"
-      val slick = "3.2.0"
+      val slick = "3.2.1"
+      val slickPgVersion = "0.15.2"
       // logging
       val logback = "1.1.7"
       // testing
@@ -101,6 +104,8 @@ lazy val library =
     // database access
     val slick = "com.typesafe.slick" %% "slick" % Version.slick
     val slickHikaricp = "com.typesafe.slick" %% "slick-hikaricp" % Version.slick
+    val slickPg = "com.github.tminglei" %% "slick-pg" % Version.slickPgVersion
+    val slickPgCirceJson = "com.github.tminglei" %% "slick-pg_circe-json" % Version.slickPgVersion
     val postgresJdbcDriver = "org.postgresql" % "postgresql" % Version.postgresJdbcDriver
     // logging
     val logbackClassic = "ch.qos.logback" % "logback-classic" % Version.logback
@@ -120,7 +125,7 @@ lazy val settings =
 
 lazy val commonSettings =
   Seq(
-    scalaVersion := "2.12.2",
+    scalaVersion := "2.12.3",
     organization := "net.sourcekick",
     organizationName := "sourcekick",
     scalacOptions ++= Seq(
@@ -148,7 +153,7 @@ lazy val commonSettings =
       "1.8"
     ),
     javaOptions ++= Seq(
-      "-jvm-debug 22225"
+      "-jvm-debug 20025"
     ),
     incOptions := incOptions.value.withNameHashing(nameHashing = true),
     unmanagedSourceDirectories.in(Compile) := Seq(scalaSource.in(Compile).value),
@@ -174,7 +179,7 @@ lazy val packagingSettings =
     maintainer.in(Docker) := "sourcekick",
     version.in(Docker) := version.value,
     dockerBaseImage := "java:8-jre-alpine",
-    dockerExposedPorts := Seq(20222),
+    dockerExposedPorts := Seq(20022),
     dockerExposedVolumes in Docker := Seq("/config"),
     dockerRepository := Option("sourcekick"),
     mappings in Universal += {
