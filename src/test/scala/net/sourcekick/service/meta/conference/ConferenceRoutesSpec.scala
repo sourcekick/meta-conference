@@ -4,7 +4,7 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.UUID
 
-import akka.http.scaladsl.server.Directives.{as, entity}
+import akka.http.scaladsl.model.{ContentTypes, HttpCharsets, StatusCodes}
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.testkit.{RouteTestTimeout, ScalatestRouteTest}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
@@ -45,38 +45,38 @@ class ConferenceRoutesSpec extends WordSpec with Matchers with BeforeAndAfterAll
 
       // Create conference
       Post(conferenceFullPath, conference) ~> sealedEntryPoint ~> check {
-        val createdConference = entity(as[Conference])
-        createdConference shouldEqual conference
+        status shouldEqual StatusCodes.Created
+        contentType shouldEqual ContentTypes.`application/json`
+        charset shouldEqual HttpCharsets.`UTF-8`
+        responseAs[Conference] shouldEqual conference
       }
 
       // Test if conference exists
       Get(conferenceFullPath) ~> sealedEntryPoint ~> check {
-        entity(as[Conference]) shouldEqual conference
+        responseAs[Conference] shouldEqual conference
       }
 
       // Create updated conference
       val conferenceUpdate = Conference(conferenceUuid, "FrOSCon2", conference.from, conference.to)
       // Push updated conference to server
       Put(conferenceFullPath, conferenceUpdate) ~> sealedEntryPoint ~> check {
-        entity(as[Conference]) shouldEqual conferenceUpdate
+        responseAs[Conference] shouldEqual conferenceUpdate
       }
 
       // Test if the conference is updated
       Get(conferenceFullPath) ~> sealedEntryPoint ~> check {
-        entity(as[Conference]) shouldEqual conferenceUpdate
+        responseAs[Conference] shouldEqual conferenceUpdate
       }
 
       // Delete the confernce
       Delete(conferenceFullPath) ~> sealedEntryPoint ~> check {
-        entity(as[Conference]) shouldEqual 1
+        responseAs[Conference] shouldEqual 1
       }
 
       // Get new conference
       Get(conferenceFullPath) ~> sealedEntryPoint ~> check {
-        entity(as[Conference]) shouldEqual null
+        responseAs[Conference] shouldEqual null
       }
     }
-
   }
-
 }
