@@ -13,7 +13,6 @@ import io.circe.java8.time._
 import io.circe.generic.auto._
 import slick.basic.DatabaseConfig
 
-import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
 class ConferenceRoutesSpec extends WordSpec with Matchers with BeforeAndAfterAll with ScalatestRouteTest {
@@ -31,7 +30,8 @@ class ConferenceRoutesSpec extends WordSpec with Matchers with BeforeAndAfterAll
   private val sealedEntryPoint = Route.seal(globalRoutes.entryPoint)
 
   override def beforeAll(): Unit = {
-    val _ = Await.result(conferenceRepository.createSchema(), 10.seconds)
+    val _ = 42
+    //val _ = Await.result(conferenceRepository.createSchema(), 10.seconds)
   }
 
   // ----- Spec -----
