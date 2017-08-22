@@ -1,0 +1,21 @@
+version: '3'
+services:
+
+  meta-conference-postgres-test-s:
+    image: recogizer/meta-conference-postgres:0.1.0
+    container_name: meta-conference-postgres-test-c
+    build: ./db
+    env_file:
+      - ./db/env_files/env_test.list
+    ports:
+      - "20062:5432"
+    volumes:
+      - meta-conference-postgres-test-data-v:/var/lib/postgresql/data
+    networks:
+      - "meta-conference-test-n"
+
+volumes:
+  meta-conference-postgres-test-data-v:
+
+networks:
+  meta-conference-test-n:

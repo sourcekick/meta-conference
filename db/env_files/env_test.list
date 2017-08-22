@@ -1,0 +1,3 @@
+POSTGRES_USER=meta_conference_test
+POSTGRES_PASSWORD=changeit
+POSTGRES_DB=meta_conference_test

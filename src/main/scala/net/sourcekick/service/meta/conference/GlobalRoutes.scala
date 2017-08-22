@@ -44,7 +44,7 @@ class GlobalRoutes(private val dispatcher: ExecutionContext,
   def entryPoint: Route = pathPrefix("api" / "v1") {
     extractRequest { request =>
       log.debug("Received request={}", request)
-      apiInfo ~ conferenceRoutes.loadConference ~ conferenceRoutes.removeConference
+      apiInfo ~ conferenceRoutes.loadConference ~ conferenceRoutes.createConference ~ conferenceRoutes.updateConference ~ conferenceRoutes.removeConference
     }
   }
 

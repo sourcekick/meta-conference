@@ -13,9 +13,6 @@ import java.util.UUID
 import org.scalatest.{AsyncWordSpec, BeforeAndAfterAll, Matchers, ParallelTestExecution}
 import slick.basic.DatabaseConfig
 
-import scala.concurrent.Await
-import scala.concurrent.duration._
-
 private object ConferenceRepositorySpec {
 
   // when using ParallelTestExecution we need to hold the references to our shared fixture outside of the Spec class
@@ -30,7 +27,8 @@ class ConferenceRepositorySpec extends AsyncWordSpec with Matchers with BeforeAn
   import ConferenceRepositorySpec._
 
   override def beforeAll(): Unit = {
-    val _ = Await.result(conferenceRepository.createSchema(), 10.seconds)
+    ()
+    //val _ = Await.result(conferenceRepository.createSchema(), 10.seconds)
   }
 
   "The DeviceRepository" must {
