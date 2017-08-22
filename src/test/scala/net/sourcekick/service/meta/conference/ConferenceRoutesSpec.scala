@@ -48,11 +48,16 @@ class ConferenceRoutesSpec extends WordSpec with Matchers with BeforeAndAfterAll
         status shouldEqual StatusCodes.Created
         contentType shouldEqual ContentTypes.`application/json`
         charset shouldEqual HttpCharsets.`UTF-8`
+
         responseAs[Conference] shouldEqual conference
       }
 
       // Test if conference exists
       Get(conferenceFullPath) ~> sealedEntryPoint ~> check {
+        status shouldEqual StatusCodes.OK
+        contentType shouldEqual ContentTypes.`application/json`
+        charset shouldEqual HttpCharsets.`UTF-8`
+
         responseAs[Conference] shouldEqual conference
       }
 
@@ -60,21 +65,37 @@ class ConferenceRoutesSpec extends WordSpec with Matchers with BeforeAndAfterAll
       val conferenceUpdate = Conference(conferenceUuid, "FrOSCon2", conference.from, conference.to)
       // Push updated conference to server
       Put(conferenceFullPath, conferenceUpdate) ~> sealedEntryPoint ~> check {
+        status shouldEqual StatusCodes.OK
+        contentType shouldEqual ContentTypes.`application/json`
+        charset shouldEqual HttpCharsets.`UTF-8`
+
         responseAs[Conference] shouldEqual conferenceUpdate
       }
 
       // Test if the conference is updated
       Get(conferenceFullPath) ~> sealedEntryPoint ~> check {
+        status shouldEqual StatusCodes.OK
+        contentType shouldEqual ContentTypes.`application/json`
+        charset shouldEqual HttpCharsets.`UTF-8`
+
         responseAs[Conference] shouldEqual conferenceUpdate
       }
 
       // Delete the confernce
       Delete(conferenceFullPath) ~> sealedEntryPoint ~> check {
+        status shouldEqual StatusCodes.OK
+        contentType shouldEqual ContentTypes.`application/json`
+        charset shouldEqual HttpCharsets.`UTF-8`
+
         responseAs[Conference] shouldEqual 1
       }
 
       // Get new conference
       Get(conferenceFullPath) ~> sealedEntryPoint ~> check {
+        status shouldEqual StatusCodes.OK
+        contentType shouldEqual ContentTypes.`application/json`
+        charset shouldEqual HttpCharsets.`UTF-8`
+
         responseAs[Conference] shouldEqual null
       }
     }

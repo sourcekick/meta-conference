@@ -2,6 +2,7 @@ package net.sourcekick.service.meta.conference
 
 import javax.ws.rs.Path
 
+import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
@@ -11,6 +12,7 @@ import io.circe.java8.time._
 import io.circe.generic.auto._
 
 import scala.concurrent.ExecutionContext
+import scala.util.{Failure, Success}
 
 @Api(produces = "application/json",
      tags = Array("conferences"),
@@ -30,12 +32,19 @@ class ConferenceRoutes(private val dispatcher: ExecutionContext,
   // Our custom materializer needs to be in implicit scope.
   //private implicit val mat: ActorMaterializer = materializer
 
+  val uuidRegex = """[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}""".r
+
   def createConference: Route = pathPrefix("conferences") {
-    pathPrefix("order" / """[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}""".r) { uuid =>
+    pathPrefix(uuidRegex) { uuid =>
       pathEnd {
         post {
           entity(as[Conference]) { conference =>
-            complete(conferenceRepository.createConference(conference))
+            // complete(conferenceRepository.createConference(conference))
+
+            onComplete(conferenceRepository.createConference(conference)) {
+              case Success(item)  => complete((StatusCodes.Created, item))
+              case f @ Failure(_) => reject
+            }
           }
         }
       }
@@ -43,7 +52,7 @@ class ConferenceRoutes(private val dispatcher: ExecutionContext,
   }
 
   def loadConference: Route = pathPrefix("conferences") {
-    pathPrefix("order" / """[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}""".r) { uuid =>
+    pathPrefix(uuidRegex) { uuid =>
       pathEnd {
         get {
           complete(conferenceRepository.loadConference(uuid))
@@ -53,7 +62,7 @@ class ConferenceRoutes(private val dispatcher: ExecutionContext,
   }
 
   def updateConference: Route = pathPrefix("conferences") {
-    pathPrefix("order" / """[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}""".r) { uuid =>
+    pathPrefix(uuidRegex) { uuid =>
       pathEnd {
         put {
           entity(as[Conference]) { conference =>
@@ -65,7 +74,7 @@ class ConferenceRoutes(private val dispatcher: ExecutionContext,
   }
 
   def removeConference: Route = pathPrefix("conferences") {
-    pathPrefix("order" / """[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}""".r) { uuid =>
+    pathPrefix(uuidRegex) { uuid =>
       pathEnd {
         delete {
           complete(conferenceRepository.removeConference(uuid))
