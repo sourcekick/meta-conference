@@ -69,7 +69,7 @@ class GlobalRoutes(private val dispatcher: ExecutionContext,
     respondWithHeaders(
       `Access-Control-Allow-Origin`.*,
       `Access-Control-Allow-Credentials`(true),
-      `Access-Control-Allow-Headers`("Authorization", "Content-Type", "X-Requested-With"),
+      `Access-Control-Allow-Headers`("Authorization", "Content-Type", "application/json", "X-Requested-With"),
       `Access-Control-Allow-Methods`(OPTIONS, POST, PUT, GET, DELETE)
     )
   }

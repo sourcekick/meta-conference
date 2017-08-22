@@ -2,7 +2,7 @@ package net.sourcekick.service.meta.conference
 
 import javax.ws.rs.Path
 
-import akka.http.scaladsl.model.StatusCodes
+import akka.http.scaladsl.model.{StatusCodes}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
