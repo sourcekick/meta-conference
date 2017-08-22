@@ -2,7 +2,7 @@ version: '3'
 services:
 
   meta-conference-postgres-test-s:
-    image: recogizer/meta-conference-postgres:0.1.0
+    image: sourcekick/meta-conference-postgres:0.1.0
     container_name: meta-conference-postgres-test-c
     build: ./db
     env_file:
