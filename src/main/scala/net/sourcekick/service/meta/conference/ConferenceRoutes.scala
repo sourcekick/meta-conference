@@ -42,8 +42,8 @@ class ConferenceRoutes(private val dispatcher: ExecutionContext,
             // complete(conferenceRepository.createConference(conference))
 
             onComplete(conferenceRepository.createConference(conference)) {
-              case Success(item)  => complete((StatusCodes.Created, item))
-              case f @ Failure(_) => reject
+              case Success(item) => complete((StatusCodes.Created, item))
+              case Failure(_)    => reject
             }
           }
         }
@@ -55,7 +55,12 @@ class ConferenceRoutes(private val dispatcher: ExecutionContext,
     pathPrefix(uuidRegex) { uuid =>
       pathEnd {
         get {
-          complete(conferenceRepository.loadConference(uuid))
+          onComplete(conferenceRepository.loadConference(uuid)) {
+            case Success(None) => complete(StatusCodes.NotFound)
+            case Success(item) => complete((StatusCodes.OK, item))
+            //case Failure(_: NoSuchElementException) => complete(StatusCodes.NotFound)
+            case Failure(_) => reject
+          }
         }
       }
     }
@@ -77,7 +82,10 @@ class ConferenceRoutes(private val dispatcher: ExecutionContext,
     pathPrefix(uuidRegex) { uuid =>
       pathEnd {
         delete {
-          complete(conferenceRepository.removeConference(uuid))
+          onComplete(conferenceRepository.removeConference(uuid)) {
+            case Success(_) => complete(StatusCodes.NoContent)
+            case Failure(_) => reject
+          }
         }
       }
     }

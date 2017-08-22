@@ -40,6 +40,7 @@ class ConferenceRoutesSpec extends WordSpec with Matchers with BeforeAndAfterAll
     val conferenceUuid = UUID.randomUUID().toString
     val conferenceFullPath = conferencesPath(conferenceUuid)
     val conference = Conference(conferenceUuid, "FrOSCon", Instant.now.minus(5L, ChronoUnit.DAYS), Instant.now)
+    //println("Test UUID: " + conferenceUuid);
 
     "create get update get remove and get a Conference" in {
 
@@ -49,7 +50,7 @@ class ConferenceRoutesSpec extends WordSpec with Matchers with BeforeAndAfterAll
         contentType shouldEqual ContentTypes.`application/json`
         charset shouldEqual HttpCharsets.`UTF-8`
 
-        responseAs[Conference] shouldEqual conference
+        entityAs[Conference] shouldEqual conference
       }
 
       // Test if conference exists
@@ -58,7 +59,7 @@ class ConferenceRoutesSpec extends WordSpec with Matchers with BeforeAndAfterAll
         contentType shouldEqual ContentTypes.`application/json`
         charset shouldEqual HttpCharsets.`UTF-8`
 
-        responseAs[Conference] shouldEqual conference
+        entityAs[Conference] shouldEqual conference
       }
 
       // Create updated conference
@@ -69,7 +70,7 @@ class ConferenceRoutesSpec extends WordSpec with Matchers with BeforeAndAfterAll
         contentType shouldEqual ContentTypes.`application/json`
         charset shouldEqual HttpCharsets.`UTF-8`
 
-        responseAs[Conference] shouldEqual conferenceUpdate
+        entityAs[Conference] shouldEqual conferenceUpdate
       }
 
       // Test if the conference is updated
@@ -78,25 +79,19 @@ class ConferenceRoutesSpec extends WordSpec with Matchers with BeforeAndAfterAll
         contentType shouldEqual ContentTypes.`application/json`
         charset shouldEqual HttpCharsets.`UTF-8`
 
-        responseAs[Conference] shouldEqual conferenceUpdate
+        entityAs[Conference] shouldEqual conferenceUpdate
       }
 
       // Delete the confernce
       Delete(conferenceFullPath) ~> sealedEntryPoint ~> check {
-        status shouldEqual StatusCodes.OK
-        contentType shouldEqual ContentTypes.`application/json`
-        charset shouldEqual HttpCharsets.`UTF-8`
+        status shouldEqual StatusCodes.NoContent
 
-        responseAs[Conference] shouldEqual 1
+        responseEntity.isKnownEmpty() shouldBe true
       }
 
       // Get new conference
       Get(conferenceFullPath) ~> sealedEntryPoint ~> check {
-        status shouldEqual StatusCodes.OK
-        contentType shouldEqual ContentTypes.`application/json`
-        charset shouldEqual HttpCharsets.`UTF-8`
-
-        responseAs[Conference] shouldEqual null
+        status shouldEqual StatusCodes.NotFound
       }
     }
   }
