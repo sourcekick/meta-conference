@@ -24,7 +24,9 @@ import scala.concurrent.ExecutionContext
   )
 )
 @Path("api/v1")
-class GlobalRoutes(private val dispatcher: ExecutionContext, private val materializer: ActorMaterializer) {
+class GlobalRoutes(private val dispatcher: ExecutionContext,
+                   private val materializer: ActorMaterializer,
+                   private val conferenceRepository: ConferenceRepository) {
 
   private final val log: Logger = LoggerFactory.getLogger(this.getClass)
 
@@ -37,7 +39,7 @@ class GlobalRoutes(private val dispatcher: ExecutionContext, private val materia
   )
    */
 
-  val conferenceRoutes = new ConferenceRoutes(dispatcher, materializer)
+  val conferenceRoutes = new ConferenceRoutes(dispatcher, materializer, conferenceRepository)
 
   def entryPoint: Route = pathPrefix("api" / "v1") {
     extractRequest { request =>

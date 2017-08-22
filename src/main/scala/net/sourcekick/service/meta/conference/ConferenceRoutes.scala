@@ -6,6 +6,9 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
 import io.swagger.annotations.{Api, Authorization}
+import de.heikoseeberger.akkahttpcirce.ErrorAccumulatingCirceSupport._
+import io.circe.java8.time._
+import io.circe.generic.auto._
 
 import scala.concurrent.ExecutionContext
 
@@ -17,32 +20,58 @@ import scala.concurrent.ExecutionContext
        )
      ))
 @Path("api/v1")
-class ConferenceRoutes(private val dispatcher: ExecutionContext, private val materializer: ActorMaterializer) {
+class ConferenceRoutes(private val dispatcher: ExecutionContext,
+                       private val materializer: ActorMaterializer,
+                       private val conferenceRepository: ConferenceRepository) {
 
   // Our custom dispatcher needs to be in implicit scope.
-  //private implicit val ec: ExecutionContext = dispatcher
+  private implicit val ec: ExecutionContext = dispatcher
 
   // Our custom materializer needs to be in implicit scope.
   //private implicit val mat: ActorMaterializer = materializer
 
   def createConference: Route = pathPrefix("conferences") {
-    ???
-    // TODO priority 1 define inner route
+    pathPrefix("order" / """[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}""".r) { uuid =>
+      pathEnd {
+        post {
+          entity(as[Conference]) { conference =>
+            complete(conferenceRepository.createConference(conference))
+          }
+        }
+      }
+    }
   }
 
   def loadConference: Route = pathPrefix("conferences") {
-    ???
-    // TODO priority 1 define inner route
+    pathPrefix("order" / """[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}""".r) { uuid =>
+      pathEnd {
+        get {
+          complete(conferenceRepository.loadConference(uuid))
+        }
+      }
+    }
   }
 
   def updateConference: Route = pathPrefix("conferences") {
-    ???
-    // TODO priority 1 define inner route
+    pathPrefix("order" / """[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}""".r) { uuid =>
+      pathEnd {
+        put {
+          entity(as[Conference]) { conference =>
+            complete(conferenceRepository.updateConference(conference))
+          }
+        }
+      }
+    }
   }
 
   def removeConference: Route = pathPrefix("conferences") {
-    ???
-    // TODO priority 1 define inner route
+    pathPrefix("order" / """[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}""".r) { uuid =>
+      pathEnd {
+        delete {
+          complete(conferenceRepository.removeConference(uuid))
+        }
+      }
+    }
   }
 
 }

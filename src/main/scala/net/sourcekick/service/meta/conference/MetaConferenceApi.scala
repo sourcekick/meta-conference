@@ -9,6 +9,7 @@ import akka.pattern.pipe
 import akka.stream.ActorMaterializer
 import com.typesafe.config.Config
 import net.sourcekick.service.meta.conference.MetaConferenceApi.MetaConferenceApiMessages
+import slick.basic.DatabaseConfig
 
 /**
   * The actor that serves the API of the `meta-conference` system.
@@ -26,6 +27,8 @@ class MetaConferenceApi(materializer: ActorMaterializer) extends Actor with Acto
   implicit val mat: ActorMaterializer = materializer
   implicit val system: ActorSystem = context.system
 
+  private def conferenceRepository = new ConferenceDatabaseModule(DatabaseConfig.forConfig("meta-conference.database"))
+
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
   override def receive: Receive = {
     case MetaConferenceApiMessages.Boot =>
@@ -34,7 +37,9 @@ class MetaConferenceApi(materializer: ActorMaterializer) extends Actor with Acto
       val swaggerRoutes: Route = swaggerDocService.routes
       // API routes.
       val apiRoutes: Route =
-        new GlobalRoutes(system.dispatchers.lookup("meta-conference.api.routing-dispatcher"), materializer).entryPoint
+        new GlobalRoutes(system.dispatchers.lookup("meta-conference.api.routing-dispatcher"),
+                         materializer,
+                         conferenceRepository).entryPoint
       // Start server.
       val _ = Http(system).bindAndHandle(swaggerRoutes ~ apiRoutes, address, port).pipeTo(self)
       context.become(binding(sender()))
