@@ -4,19 +4,27 @@
 
 // Calculate the current year for usage in copyright notices and license headers.
 lazy val currentYear: Int = java.time.OffsetDateTime.now().getYear
+// The project start year is used to calculate the year span for the license headers.
+val startYear: Int        = 2017
 
 lazy val metaConference =
   project
     .in(file("."))
-    .enablePlugins(GitVersioning, GitBranchPrompt)
-    .enablePlugins(AshScriptPlugin, JavaAppPackaging)
+    .enablePlugins(
+      AutomateHeaderPlugin,
+      BuildInfoPlugin,
+      GitBranchPrompt,
+      GitVersioning,
+      JavaAppPackaging,
+      DockerPlugin,
+      AshScriptPlugin
+    )
     .settings(settings)
     .settings(
       name := "meta-conference",
-      buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, BuildInfoKey.action("buildTime") {
-        java.time.ZonedDateTime.now()
-      }),
+      buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, BuildInfoKey.action("buildTime") { java.time.OffsetDateTime.now() }),
       buildInfoPackage := "net.sourcekick.service.meta.conference",
+      mainClass in Compile := Some("net.sourcekick.service.meta.conference.MetaConferenceApp"),
       //scalacOptions += "-Ystatistics", // Print compiler statistics.
       libraryDependencies ++= Seq(
         library.akkaSlf4j,
@@ -119,15 +127,29 @@ lazy val library =
 
 lazy val settings =
   commonSettings ++
-    gitSettings ++
-    packagingSettings ++
-    scalafmtSettings
+  gitSettings ++
+  packagingSettings ++
+  resolverSettings ++
+  scalafmtSettings
+
+// Calculate the license years (either a single year or a span) and prepare the license text.
+lazy val licenseYears: String =
+  if (startYear == currentYear)
+    currentYear.toString
+  else
+    s"$startYear - $currentYear"
+lazy val licenseText: String  =
+  s"""|Copyright (C) $licenseYears sourcekick - All Rights Reserved
+      |Unauthorized copying of this file, via any medium is strictly prohibited
+      |Proprietary and confidential
+      |""".stripMargin
 
 lazy val commonSettings =
   Seq(
-    scalaVersion := "2.12.4",
     organization := "net.sourcekick",
     organizationName := "sourcekick",
+    headerLicense := Some(HeaderLicense.Custom(licenseText)),
+    scalaVersion := "2.12.4",
     scalacOptions ++= Seq(
       "-deprecation",
       "-encoding",
@@ -144,18 +166,18 @@ lazy val commonSettings =
       "-Ywarn-unused-import",
       "-Ywarn-value-discard"
     ),
+    scalacOptions in (Compile, console) ~= (_.filterNot(_ == "-Xfatal-warnings")), // Relax settings for console
+    scalacOptions in (Test, console) ~= (_.filterNot(_ == "-Xfatal-warnings")), // Relax settings for console
     javacOptions ++= Seq(
-      "-encoding",
-      "UTF-8",
-      "-source",
-      "1.8",
-      "-target",
-      "1.8"
+      "-encoding", "UTF-8",
+      "-source", "1.8",
+      "-target", "1.8"
     ),
     javaOptions ++= Seq(
       "-jvm-debug 20025"
     ),
-    incOptions := incOptions.value.withNameHashing(nameHashing = true),
+    transitiveClassifiers := Seq("sources"),
+    publishArtifact in (Compile, packageDoc) := false,
     unmanagedSourceDirectories.in(Compile) := Seq(scalaSource.in(Compile).value),
     unmanagedSourceDirectories.in(Test) := Seq(scalaSource.in(Test).value),
     wartremoverWarnings in (Compile, compile) ++= Warts.unsafe
@@ -178,7 +200,7 @@ lazy val packagingSettings =
     daemonUser.in(Docker) := "root",
     maintainer.in(Docker) := "sourcekick",
     version.in(Docker) := version.value,
-    dockerBaseImage := "java:8-jre-alpine",
+    dockerBaseImage := "openjdk:jre-alpine",
     dockerExposedPorts := Seq(20022),
     dockerExposedVolumes in Docker := Seq("/config"),
     dockerRepository := Option("sourcekick"),
@@ -188,10 +210,16 @@ lazy val packagingSettings =
     }
   )
 
+lazy val ivyLocal = Resolver.file("local", file(Path.userHome.absolutePath + "/.ivy2/local"))(Resolver.ivyStylePatterns)
+lazy val resolverSettings =
+  Seq(
+    externalResolvers := Seq(ivyLocal, DefaultMavenRepository),
+    credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
+  )
+
 lazy val scalafmtSettings =
   Seq(
     scalafmtOnCompile := true,
+    scalafmtOnCompile.in(Sbt) := false,
     scalafmtVersion := "1.3.0"
   )
-// Enable scalafmt for the IntegrationTest scope.
-//inConfig(IntegrationTest)(com.lucidchart.sbt.scalafmt.ScalafmtCorePlugin.autoImport.scalafmtSettings)
