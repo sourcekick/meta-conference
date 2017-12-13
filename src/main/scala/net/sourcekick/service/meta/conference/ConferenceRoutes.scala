@@ -35,60 +35,19 @@ class ConferenceRoutes(private val dispatcher: ExecutionContext,
   val uuidRegex = """[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}""".r
 
   def createConference: Route = pathPrefix("conferences") {
-    pathPrefix(uuidRegex) { uuid =>
-      pathEnd {
-        post {
-          entity(as[Conference]) { conference =>
-            // complete(conferenceRepository.createConference(conference))
-
-            onComplete(conferenceRepository.createConference(conference)) {
-              case Success(item) => complete((StatusCodes.Created, item))
-              case Failure(_)    => reject
-            }
-          }
-        }
-      }
-    }
+    ???
   }
 
   def loadConference: Route = pathPrefix("conferences") {
-    pathPrefix(uuidRegex) { uuid =>
-      pathEnd {
-        get {
-          onComplete(conferenceRepository.loadConference(uuid)) {
-            case Success(None) => complete(StatusCodes.NotFound)
-            case Success(item) => complete((StatusCodes.OK, item))
-            //case Failure(_: NoSuchElementException) => complete(StatusCodes.NotFound)
-            case Failure(_) => reject
-          }
-        }
-      }
-    }
+    ???
   }
 
   def updateConference: Route = pathPrefix("conferences") {
-    pathPrefix(uuidRegex) { uuid =>
-      pathEnd {
-        put {
-          entity(as[Conference]) { conference =>
-            complete(conferenceRepository.updateConference(conference))
-          }
-        }
-      }
-    }
+    ???
   }
 
   def removeConference: Route = pathPrefix("conferences") {
-    pathPrefix(uuidRegex) { uuid =>
-      pathEnd {
-        delete {
-          onComplete(conferenceRepository.removeConference(uuid)) {
-            case Success(_) => complete(StatusCodes.NoContent)
-            case Failure(_) => reject
-          }
-        }
-      }
-    }
+    ???
   }
 
 }
