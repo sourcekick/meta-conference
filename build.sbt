@@ -58,15 +58,15 @@ lazy val library =
     object Version {
       val h2db = "1.4.193"
       // Akka
-      val akka = "2.5.4"
-      val akkaHttp = "10.0.9"
-      val akkaHttpCirce = "1.17.0"
+      val akka = "2.5.8"
+      val akkaHttp = "10.0.11"
+      val akkaHttpCirce = "1.18.1"
       val swaggerAkkaHttp = "0.10.1"
       // JSON
       val circe = "0.8.0"
       val flyway = "4.2.0"
       // JWT
-      val jwtCirce = "0.14.0"
+      val jwtCirce = "0.14.1"
       // time
       val scalaTime = "0.4.1"
       // database access
@@ -77,7 +77,7 @@ lazy val library =
       val logback = "1.1.7"
       // testing
       val scalaCheck = "1.13.5"
-      val scalaTest = "3.0.1"
+      val scalaTest = "3.0.4"
     }
     val h2Database = "com.h2database" % "h2" % Version.h2db
     // AKka
@@ -125,7 +125,7 @@ lazy val settings =
 
 lazy val commonSettings =
   Seq(
-    scalaVersion := "2.12.3",
+    scalaVersion := "2.12.4",
     organization := "net.sourcekick",
     organizationName := "sourcekick",
     scalacOptions ++= Seq(
@@ -191,7 +191,7 @@ lazy val packagingSettings =
 lazy val scalafmtSettings =
   Seq(
     scalafmtOnCompile := true,
-    scalafmtVersion := "1.0.0-RC4"
+    scalafmtVersion := "1.3.0"
   )
 // Enable scalafmt for the IntegrationTest scope.
 //inConfig(IntegrationTest)(com.lucidchart.sbt.scalafmt.ScalafmtCorePlugin.autoImport.scalafmtSettings)
